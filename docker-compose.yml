@@ -1,0 +1,222 @@
+services:
+  user-db:
+    image: postgres:15
+    container_name: user-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: usersdb
+    volumes:
+      - user_data:/var/lib/postgresql/data
+      - ./user-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    networks:
+      - ToGoodToGoService
+
+  user-service:
+    build: 
+      context: ./user-service  
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: always
+    ports:
+      - "5001:5001"
+    depends_on:
+      - user-db
+    environment:
+      DB_HOST: user-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: usersdb
+      PORT: 5001
+    networks:
+      - ToGoodToGoService
+
+  merchant-db:
+    image: postgres:15
+    container_name: merchant-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: merchantdb
+    volumes:
+      - merchant_data:/var/lib/postgresql/data
+      - ./merchant-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+    networks:
+      - ToGoodToGoService
+
+  merchant-service:
+    build: ./merchant-service
+    container_name: merchant-service
+    restart: always
+    ports:
+      - "5002:5002"
+    environment:
+      DB_HOST: merchant-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: merchantdb
+      USER_SERVICE_URL: http://user-service:5001
+    depends_on:
+      - merchant-db
+    networks:
+      - ToGoodToGoService
+
+  payment-db:
+    image: postgres:15
+    container_name: payment-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: paymentdb
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+      - ./payment-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5435:5432"
+    networks:
+      - ToGoodToGoService
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      DB_HOST: payment-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: paymentdb
+      PORT: 5003
+      USER_SERVICE_URL: http://user-service:5001
+    depends_on:
+      - payment-db
+    networks:
+      - ToGoodToGoService
+
+  notification-db:
+    image: postgres:15
+    container_name: notification-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notificationdb
+    volumes:
+      - notification_data:/var/lib/postgresql/data
+      - ./notification-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5436:5432"
+    networks:
+      - ToGoodToGoService
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      DB_HOST: notification-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: notificationdb
+      PORT: 5004
+      USER_SERVICE_URL: http://user-service:5001
+    depends_on:
+      - notification-db
+    networks:
+      - ToGoodToGoService
+
+  offer-db:
+    image: postgres:15
+    container_name: offer-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: offerdb
+    volumes:
+      - offer_data:/var/lib/postgresql/data
+    ports:
+      - "5437:5432"
+    networks:
+      - ToGoodToGoService
+
+  offer-service:
+    build:
+      context: ./offer-service
+      dockerfile: Dockerfile
+    container_name: offer-service
+    restart: always
+    ports:
+      - "5005:5005"
+    depends_on:
+      - offer-db
+    environment:
+      DB_HOST: offer-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: offerdb
+      PORT: 5005
+      UPLOAD_DIR: /usr/src/app/uploads
+    volumes:
+      - ./offer-service/uploads:/usr/src/app/uploads
+    networks:
+      - ToGoodToGoService
+
+  order-db:
+    image: postgres:15
+    container_name: order-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orderdb
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    ports:
+      - "5438:5432"
+    networks:
+      - ToGoodToGoService
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: always
+    ports:
+      - "5006:5006"
+    depends_on:
+      - order-db
+    environment:
+      DB_HOST: order-db
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: orderdb
+      PORT: 5006
+      QR_OUTPUT_DIR: /usr/src/app/qrcodes
+    volumes:
+      - ./order-service/qrcodes:/usr/src/app/qrcodes
+    networks:
+      - ToGoodToGoService
+
+volumes:
+  user_data:
+  merchant_data:
+  payment_data:
+  notification_data:
+  offer_data:
+  order_data:
+
+networks:
+  ToGoodToGoService:
+    driver: bridge
