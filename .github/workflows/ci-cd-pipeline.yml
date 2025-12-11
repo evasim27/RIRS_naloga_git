@@ -2,9 +2,9 @@ name: CI/CD Pipeline - Testing and Coverage
 
 on:
   push:
-    branches: [ main]
+    branches: [main]
   pull_request:
-    branches: [ main]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -59,7 +59,6 @@ jobs:
           name: frontend-coverage
           fail_ci_if_error: false
 
-  # ==================== BACKEND - USER SERVICE ====================
   user-service-tests:
     name: User Service Testing & Coverage
     runs-on: ubuntu-latest
@@ -99,7 +98,6 @@ jobs:
           name: user-service-coverage
           fail_ci_if_error: false
 
-  # ==================== BACKEND - PAYMENT SERVICE ====================
   payment-service-tests:
     name: Payment Service Testing & Coverage
     runs-on: ubuntu-latest
@@ -139,7 +137,6 @@ jobs:
           name: payment-service-coverage
           fail_ci_if_error: false
 
-  # ==================== BACKEND - MERCHANT SERVICE (Python) ====================
   merchant-service-tests:
     name: Merchant Service Testing & Coverage
     runs-on: ubuntu-latest
@@ -183,7 +180,6 @@ jobs:
           name: merchant-service-coverage
           fail_ci_if_error: false
 
-  # ==================== SUMMARY AND REPORTING ====================
   test-summary:
     name: Test Summary and Reporting
     needs: [frontend-tests, user-service-tests, payment-service-tests, merchant-service-tests]
