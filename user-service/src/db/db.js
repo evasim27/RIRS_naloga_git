@@ -26,9 +26,18 @@ const config = {
   port: 5432
 };
 
-const pool = new Pool(config);
+// during tests, export a lightweight mock pool to avoid real DB connections
+if (process.env.NODE_ENV === 'test') {
+  const mockPool = {
+    query: async () => ({ rows: [] }),
+    connect: async () => {},
+    end: async () => {}
+  };
+  module.exports = mockPool;
+} else {
+  const pool = new Pool(config);
 
-async function waitForDB() {
+  async function waitForDB() {
   for (let i = 0; i < 10; i++) {
     try {
       await pool.query("SELECT 1");
@@ -41,9 +50,13 @@ async function waitForDB() {
   }
 
   throw new Error("Could not connect to PostgreSQL");
+  }
+
+  // only attempt to connect when not running unit tests
+  if (process.env.NODE_ENV !== 'test') {
+    waitForDB();
+  }
+
+  module.exports = pool;
 }
-
-waitForDB();
-
-module.exports = pool;
 

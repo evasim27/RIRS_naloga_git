@@ -168,3 +168,17 @@ module.exports = {
   getPaymentsByUserId,
   updatePaymentStatus
 };
+
+// Backwards-compatible API expected by tests
+module.exports.processPayment = async (paymentData) => {
+  return await createPayment(paymentData);
+};
+
+module.exports.getPaymentHistory = async (userId, limit, offset) => {
+  return await getPaymentsByUserId(userId, limit, offset);
+};
+
+module.exports.validateCard = async (paymentData) => {
+  const result = await validatePayment(paymentData);
+  return result.validation;
+};

@@ -9,23 +9,33 @@ const config = {
   port: 5432
 };
 
-const pool = new Pool(config);
+// export a lightweight mock pool during tests to avoid real DB connections
+if (process.env.NODE_ENV === 'test') {
+  const mockPool = {
+    query: async () => ({ rows: [] }),
+    connect: async () => {},
+    end: async () => {}
+  };
+  module.exports = mockPool;
+} else {
+  const pool = new Pool(config);
 
-async function waitForDB() {
-  for (let i = 0; i < 10; i++) {
-    try {
-      await pool.query("SELECT 1");
-      console.log("Connected to PostgreSQL");
-      return;
-    } catch (err) {
-      console.log("DB not ready — retrying in 2 seconds...");
-      await new Promise(res => setTimeout(res, 2000));
+  async function waitForDB() {
+    for (let i = 0; i < 10; i++) {
+      try {
+        await pool.query("SELECT 1");
+        console.log("Connected to PostgreSQL");
+        return;
+      } catch (err) {
+        console.log("DB not ready — retrying in 2 seconds...");
+        await new Promise(res => setTimeout(res, 2000));
+      }
     }
+
+    throw new Error("Could not connect to PostgreSQL");
   }
 
-  throw new Error("Could not connect to PostgreSQL");
+  waitForDB();
+
+  module.exports = pool;
 }
-
-waitForDB();
-
-module.exports = pool;

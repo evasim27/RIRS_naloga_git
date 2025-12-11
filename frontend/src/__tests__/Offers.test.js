@@ -19,16 +19,23 @@ describe('Offers Component', () => {
   test('renders Offers Management heading', () => {
     api.offerAPI.get.mockResolvedValue({ data: [] });
     render(<Offers />);
-    const heading = screen.getByText(/Offers Management/i);
-    expect(heading).toBeInTheDocument();
+    return screen.findByText(/Offers Management/i).then(heading => {
+      expect(heading).toBeInTheDocument();
+    });
   });
 
   test('renders offer creation form with all fields', () => {
     api.offerAPI.get.mockResolvedValue({ data: [] });
     render(<Offers />);
-    expect(screen.getByPlaceholderText(/Offer Title/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Description/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Discount %/i)).toBeInTheDocument();
+    return Promise.all([
+      screen.findByPlaceholderText(/Offer Title/i),
+      screen.findByPlaceholderText(/Description/i),
+      screen.findByPlaceholderText(/Discount %/i),
+    ]).then(([t, d, p]) => {
+      expect(t).toBeInTheDocument();
+      expect(d).toBeInTheDocument();
+      expect(p).toBeInTheDocument();
+    });
   });
 
   test('displays offers list from API', async () => {

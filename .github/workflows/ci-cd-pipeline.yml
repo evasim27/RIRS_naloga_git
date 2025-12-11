@@ -2,13 +2,12 @@ name: CI/CD Pipeline - Testing and Coverage
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main]
   workflow_dispatch:
 
 jobs:
-  # ==================== FRONTEND TESTS ====================
   frontend-tests:
     name: Frontend Testing & Coverage
     runs-on: ubuntu-latest
@@ -44,7 +43,7 @@ jobs:
           fi
 
       - name: Upload frontend coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-report
           path: |
@@ -86,7 +85,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload user service coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: user-service-coverage-report
           path: user-service/coverage/
@@ -126,7 +125,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload payment service coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: payment-service-coverage-report
           path: payment-service/coverage/
@@ -168,7 +167,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload merchant service coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: merchant-service-coverage-report
           path: |
@@ -193,7 +192,7 @@ jobs:
     
     steps:
       - name: Download all coverage reports
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Generate summary
         run: |
@@ -222,7 +221,7 @@ jobs:
           ls -la
 
       - name: Archive all coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: all-coverage-reports
           path: |
