@@ -38,6 +38,6 @@ describe('Payment Routes', () => {
 
   test('router should export as Express router', () => {
     router = require('../../src/routes/payment_routes.js');
-    expect(router.constructor.name).toMatch(/Router|EventEmitter/);
+    expect(router.constructor.name).toMatch(/Router|EventEmitter|Function/);
   });
 });

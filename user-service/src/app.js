@@ -12,6 +12,11 @@ app.use("/users", userRoutes);
 
 // port
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`User Service running on port ${PORT}`);
-});
+// only start server when not running tests
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`User Service running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

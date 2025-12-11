@@ -19,21 +19,29 @@ describe('Users Component', () => {
   test('renders Users Management heading', () => {
     api.userAPI.get.mockResolvedValue({ data: [] });
     render(<Users />);
-    const heading = screen.getByText(/Users Management/i);
-    expect(heading).toBeInTheDocument();
+    return screen.findByText(/Users Management/i).then(heading => {
+      expect(heading).toBeInTheDocument();
+    });
   });
 
   test('renders create user form', () => {
     api.userAPI.get.mockResolvedValue({ data: [] });
     render(<Users />);
-    expect(screen.getByPlaceholderText(/Username/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    return Promise.all([
+      screen.findByPlaceholderText(/Username/i),
+      screen.findByPlaceholderText(/Email/i),
+      screen.findByPlaceholderText(/Password/i),
+    ]).then(([u, e, p]) => {
+      expect(u).toBeInTheDocument();
+      expect(e).toBeInTheDocument();
+      expect(p).toBeInTheDocument();
+    });
   });
 
   test('displays loading state', async () => {
     api.userAPI.get.mockImplementation(() => new Promise(() => {}));
     render(<Users />);
+    await screen.findByText(/Loading/i);
     expect(screen.getByText(/Loading/i)).toBeInTheDocument();
   });
 

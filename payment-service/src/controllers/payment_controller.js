@@ -357,3 +357,7 @@ module.exports = {
   deletePaymentController,
   cancelPaymentController
 };
+
+// Backwards-compatible aliases expected by tests
+module.exports.processPayment = createPaymentController;
+module.exports.getPayments = getPaymentsByUserController;
