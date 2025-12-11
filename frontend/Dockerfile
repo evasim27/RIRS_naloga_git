@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --only=production && npm cache clean --force
 
 COPY . .
 
@@ -16,7 +16,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-RUN npm install -g serve
+RUN npm install -g serve && npm cache clean --force
 
 COPY --from=builder /app/build ./build
 

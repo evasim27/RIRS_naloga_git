@@ -1,6 +1,4 @@
-import pytest
 from unittest.mock import patch, MagicMock
-from src.services.merchant_service import merchant_exists, create_merchant
 
 
 class TestMerchantService:
