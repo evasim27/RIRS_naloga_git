@@ -209,6 +209,31 @@ services:
     networks:
       - ToGoodToGoService
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - merchant-service
+      - order-service
+      - offer-service
+      - payment-service
+      - notification-service
+    environment:
+      REACT_APP_USER_SERVICE_URL: http://user-service:5001
+      REACT_APP_MERCHANT_SERVICE_URL: http://merchant-service:5002
+      REACT_APP_ORDER_SERVICE_URL: http://order-service:5006
+      REACT_APP_OFFER_SERVICE_URL: http://offer-service:5005
+      REACT_APP_PAYMENT_SERVICE_URL: http://payment-service:5003
+      REACT_APP_NOTIFICATION_SERVICE_URL: http://notification-service:5004
+    networks:
+      - ToGoodToGoService
+
 volumes:
   user_data:
   merchant_data:
